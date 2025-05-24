@@ -203,4 +203,31 @@ fun PreviewNameInput(){
 ////////////
 
 ////////////////////////////
-////////////remember mutableStateOf
+////////////State hoisting
+
+@Composable
+fun NameInputHoisted(name:String, onNameChange:(String)->Unit){
+
+    Column{
+        TextField(
+            value = name,
+            onValueChange = onNameChange,
+            label = {Text("Enter your name..")}
+        )
+        Text("Hello, $name")
+    }
+}
+
+@Composable
+fun ParentComposable(){
+    var name by remember{mutableStateOf("")}
+
+    NameInputHoisted(name, onNameChange = {name=it})
+    println(name)
+}
+
+@Preview(showBackground = true)
+@Composable
+fun StateHoistingPreview(){
+    ParentComposable()
+}
