@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -165,3 +166,41 @@ fun ButtonExample(){
 fun PreviewButton(){
     ButtonExample()
 }
+////////////////////////////
+////////////
+
+////////////////////////////
+////////////remember mutableStateOf
+
+@Composable
+fun NameInput(){
+
+    var name by remember { mutableStateOf("") }
+
+    Column{
+
+        TextField(
+            value = name,
+            onValueChange = {
+                name = it
+            },
+            label = {
+                Text("Enter your name..")
+            }
+        )
+
+        Text("Hello, $name")
+
+    }
+}
+
+@Composable
+@Preview(showBackground = true, device = "id:pixel_5")
+fun PreviewNameInput(){
+    NameInput()
+}
+////////////////////////////
+////////////
+
+////////////////////////////
+////////////remember mutableStateOf
