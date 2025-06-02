@@ -56,8 +56,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComposeTutorialTheme {
 
-                MyAppNavHost()
-
+                //MyAppNavHost()
+                MyAppNavHostWithParameter()
             }
         }
     }
@@ -404,6 +404,56 @@ fun DetailsScreen(navController: NavController){
             onClick = {navController.popBackStack()},
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ){
+            Text("Geri Dön")
+        }
+    }
+}
+
+@Composable
+fun MyAppNavHostWithParameter(){
+
+    val navController = rememberNavController()
+
+    NavHost(navController,"main"){
+
+        composable("main") {
+            MainScreen(navController)
+        }
+
+        composable("newDetails/{userName}") { backStackEntry->
+            val userName = backStackEntry.arguments?.getString("userName")
+            NewDetailsScreen(navController=navController,userName=userName)
+        }
+
+    }
+}
+
+@Composable
+fun MainScreen(navController: NavController){
+
+    val textValue = remember { mutableStateOf("") }
+    Column(modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center) {
+        TextField(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            value = textValue.value,
+            onValueChange = {textValue.value=it}
+        )
+        Button(
+            modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally),
+            onClick = {navController.navigate("newDetails/${textValue.value}")}) {
+
+            Text(text = "Go Details")
+        }
+    }
+}
+
+@Composable
+fun NewDetailsScreen(navController: NavController,userName: String?){
+    Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center){
+
+        Text("Kullanıcı bulunamadı: $userName", modifier = Modifier.align(Alignment.CenterHorizontally))
+        Button(onClick = {navController.popBackStack()}, modifier = Modifier.align(Alignment.CenterHorizontally)) {
             Text("Geri Dön")
         }
     }
