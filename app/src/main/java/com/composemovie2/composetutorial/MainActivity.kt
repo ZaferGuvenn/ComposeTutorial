@@ -1,21 +1,32 @@
 package com.composemovie2.composetutorial
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -30,7 +41,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHost
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.composemovie2.composetutorial.ui.theme.ComposeTutorialTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +56,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComposeTutorialTheme {
 
-
+                MyAppNavHost()
 
             }
         }
@@ -162,7 +179,7 @@ fun ButtonExample(){
 }
 
 @Composable
-@Preview(showBackground = true, device = "id:pixel_5")
+@Preview(showBackground = true)
 fun PreviewButton(){
     ButtonExample()
 }
@@ -211,7 +228,10 @@ fun NameInputHoisted(name:String, onNameChange:(String)->Unit){
     Column{
         TextField(
             value = name,
-            onValueChange = onNameChange,
+            onValueChange =//onNameChange de denebilir!
+                {
+                    onNameChange(it)
+                },
             label = {Text("Enter your name..")}
         )
         Text("Hello, $name")
@@ -230,4 +250,161 @@ fun ParentComposable(){
 @Composable
 fun StateHoistingPreview(){
     ParentComposable()
+}
+////////////////////////////
+////////////
+
+////////////////////////////
+////////////LazyColumn
+
+@Composable
+fun SimpleList(){
+    LazyColumn {
+        items(5){ index->
+            Text(text = "Index #$index", modifier = Modifier.padding(8.dp))
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SimpleListPreview(){
+    SimpleList()
+}
+
+@Composable
+fun NameList(names: List<String>){
+    LazyColumn {
+        items(names){ name->
+
+            Column{
+                Text(text = "Index #$name", modifier = Modifier.padding(8.dp))
+                Spacer(modifier = Modifier.height(1.dp).fillMaxWidth().background(Color.Red))
+
+            }
+
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun NameListPreview(){
+    NameList(names = listOf("Alan","Mark","Max","Ava"))
+}
+
+////////////////////////////
+////////////
+
+////////////////////////////
+////////////ShapedBox
+//materialtheme ayarları ile
+
+@Composable
+fun ShapedBox(){
+
+    Surface(
+        shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(16.dp)
+    ){
+        Text(
+            text = "Şekilli kutu", modifier = Modifier.padding(16.dp)
+        )
+    }
+
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ShowShapedBox(){
+    ShapedBox()
+}
+////////////////////////////
+////////////
+
+////////////////////////////
+////////////ShapedBoxWith Dark Mode
+
+@Composable
+fun DarkModeShapedBox(){
+
+    Surface(
+        color = MaterialTheme.colorScheme.primary,
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier.padding(16.dp)
+    ) {
+
+        Text(
+            text = "Dark şekilli kutu",
+            modifier = Modifier.padding(16.dp)
+        )
+
+    }
+    
+}
+
+@Composable
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+fun ShowDarkModeShapedBox(){
+
+    ComposeTutorialTheme {
+
+        DarkModeShapedBox()
+    }
+}
+
+////////////////////////////
+////////////
+
+////////////////////////////
+////////////Navigation Compose
+
+@Composable
+fun MyAppNavHost(){
+
+    val navController= rememberNavController()
+
+    NavHost(
+        navController= navController, startDestination = "home"
+    ){
+        composable("home") { HomeScreen(navController) }
+        composable("details") { DetailsScreen(navController) }
+    }
+}
+
+@Composable
+fun HomeScreen(navController: NavController){
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center
+        )
+    {
+        Text("Home Screen", modifier=Modifier.align(Alignment.CenterHorizontally))
+        Button(
+            onClick = {navController.navigate("details")},
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ){
+            Text("Detaylara Git")
+        }
+    }
+}
+
+@Composable
+fun DetailsScreen(navController: NavController){
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("Detail Screen", modifier = Modifier.align(Alignment.CenterHorizontally))
+        Button(
+            onClick = {navController.popBackStack()},
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ){
+            Text("Geri Dön")
+        }
+    }
 }
